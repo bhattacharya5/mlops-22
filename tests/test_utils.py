@@ -1,6 +1,8 @@
 import sys, os
 import numpy as np
 from joblib import load
+import random
+random.seed(42)
 
 
 sys.path.append(".")
@@ -8,6 +10,12 @@ sys.path.append(".")
 from utils import get_all_h_param_comb, tune_and_save
 from sklearn import svm, metrics
 
+#Add a test case that verifies that if random seed/states are same, the dataset splits created will be exactly same.
+def test_train_test_split():
+    orig_state = random.getstate()    
+    new_state = random.getstate()    
+    assert new_state == orig_state, print('the dataset splits created will be exactly same.')
+    
 # test case to check if all the combinations of the hyper parameters are indeed getting created
 def test_get_h_param_comb():
     gamma_list = [0.01, 0.005, 0.001, 0.0005, 0.0001]
@@ -48,7 +56,8 @@ def test_tune_and_save():
     clf = svm.SVC()
     metric = metrics.accuracy_score
     
-    model_path = "test_run_model_path.joblib"
+    #Question 3 Make the code changes to save the models into "models" folder.
+    model_path = "model\test_run_model_path.joblib"
     actual_model_path = tune_and_save(clf, x_train, y_train, x_dev, y_dev, metric, h_param_comb, model_path)
 
     assert actual_model_path == model_path

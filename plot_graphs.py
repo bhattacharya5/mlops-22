@@ -1,12 +1,9 @@
-# Author: Gael Varoquaux <gael dot varoquaux at normalesup dot org>
-# License: BSD 3 clause
-
-
-# PART: library dependencies -- sklear, torch, tensorflow, numpy, transformers
 
 # Import datasets, classifiers and performance metrics
 from sklearn import datasets, svm, metrics, tree
 import pdb
+import numpy as np
+import argparse
 
 from utils import (
     preprocess_digits,
@@ -17,6 +14,19 @@ from utils import (
     macro_f1
 )
 from joblib import dump, load
+
+#Use "argparse" library to take following two arguments: 1. "--clf_name" in which you specify the classifier name ("svm" for support vector machines, "tree" for decision tree) 
+#and 2.  "--random_state" in which you specify an integer value for random seed/state value that gets used for dataset splitting.
+default_classifier = "svm"
+default_random_value = 1
+
+parser = argparse.ArgumentParser(description='argparse for svm')
+parser.add_argument('--clf_name', default=default_classifier, help='NA')
+parser.add_argument('--random_state', default=default_random_value, help='NA')
+args = parser.parse_args()
+
+classifier_name = args.clf_name
+random_state = args.random_state
 
 train_frac, dev_frac, test_frac = 0.8, 0.1, 0.1
 assert train_frac + dev_frac + test_frac == 1.0
@@ -58,8 +68,8 @@ for n in range(n_cv):
     # PART: Define the model
     # Create a classifier: a support vector classifier
     models_of_choice = {
-        "svm": svm.SVC(),
-        "decision_tree": tree.DecisionTreeClassifier(),
+        classifier_name: svm.SVC()
+        #"decision_tree": tree.DecisionTreeClassifier(),
     }
     for clf_name in models_of_choice:
         clf = models_of_choice[clf_name]
@@ -84,5 +94,8 @@ for n in range(n_cv):
             f"Classification report for classifier {clf}:\n"
             f"{metrics.classification_report(y_test, predicted)}\n"
         )
+        file = open('resuslts/{clf_name}_{random_state}.txt', 'w')
+        file.write(metrics.classification_report(y_test, predicted))
+        file.close()
 
 print(results)

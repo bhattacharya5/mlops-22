@@ -4,6 +4,11 @@ from sklearn.metrics import f1_score
 from joblib import dump
 from sklearn import svm, tree
 import pdb
+import numpy as np
+import random
+random.seed(42)
+
+
 
 
 def get_all_combs(param_vals, param_name, combs_so_far):
@@ -64,15 +69,16 @@ def pred_image_viz(x_test, predictions):
 # dev to set hyperparameters of the model
 # test to evaluate the performance of the model
 
-
-def train_dev_test_split(data, label, train_frac, dev_frac):
-
-    dev_test_frac = 1 - train_frac
+def train_dev_test_split(data, label, train_frac, dev_frac):    
+    dev_test_frac = 1 - train_frac    
+    #Question 1.Find out how you can ensure exact same splitting of the dataset; correspondingly update your code. 
+    #Hint: what is the non-deterministic/random aspect in split creation -- what argument controls it?
     x_train, x_dev_test, y_train, y_dev_test = train_test_split(
-        data, label, test_size=dev_test_frac, shuffle=True
+        data, label, test_size=dev_test_frac, shuffle=True, random_state=42
     )
+
     x_test, x_dev, y_test, y_dev = train_test_split(
-        x_dev_test, y_dev_test, test_size=(dev_frac) / dev_test_frac, shuffle=True
+        x_dev_test, y_dev_test, test_size=(dev_frac) / dev_test_frac, shuffle=True, random_state=42
     )
 
     return x_train, y_train, x_dev, y_dev, x_test, y_test
